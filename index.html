@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Document sans titre</title>
+
+<!-- TinyMCE -->
+<script type="text/javascript" src="./tinymce/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript">
+	tinyMCE.init({
+		mode : "textareas",
+		language: "fr"
+	});
+</script>
+<!-- /TinyMCE -->
+
+<style>
+ html,body{font:normal 0.9em arial,helvetica;}
+ #log {width:440px; height:200px; border:1px solid #7F9DB9; overflow:auto;}
+ #msg {width:330px;}
+</style>
+
+<script>
+var socket;
+
+function init(){
+  var host = "ws://178.32.28.114:14361"; //172.16.64.85
+  try{
+    socket = new WebSocket(host);
+    log('WebSocket - status '+socket.readyState);
+    socket.onopen    = function(msg){ log("Welcome - status "+this.readyState); };
+    socket.onmessage = function(msg){ log("Received: "+msg.data); };
+    socket.onclose   = function(msg){ log("Disconnected - status "+this.readyState); };
+  }
+  catch(ex){ log(ex); }
+  $("msg").focus();
+}
+
+function send(){
+  var txt,msg;
+  txt = $("msg");
+  msg = txt.value;
+  if(!msg){ alert("Message can not be empty"); return; }
+  txt.value="";
+  txt.focus();
+  try{ socket.send(msg); log('Sent: '+msg); } catch(ex){ log(ex); }
+}
+function quit(){
+  log("Goodbye!");
+  socket.close();
+  socket=null;
+}
+
+// Utilities
+function $(id){ return document.getElementById(id); }
+function log(msg){ $("log").innerHTML+="<br>"+msg; }i
+function onkey(event){ if(event.keyCode==13){ send(); } }
+</script>
+
+</head>
+<body onload="init()">
+ <h3>WebSocket v2.00</h3>
+ <div id="log"></div>
+ <input id="msg" type="textbox" onkeypress="onkey(event)"/>
+ <button onclick="send()">Send</button>
+ <button onclick="quit()">Quit</button>
+ <div>Commands: hello, hi, name, age, date, time, thanks, bye</div>
+ <br>
+ <br>
+
+<form method="post">
+	<h3>Sans Titre</h3>
+	<textarea style="width: 80%">
+		Bonjour, je m'appelle bingbong.
+		Ceci est mon premier document ! Waw
+	</textarea>
+
+	<br />
+
+</form>
+
+</body>
+</html>
